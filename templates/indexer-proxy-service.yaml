@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "my-subql-chart.fullname" . }}-indexer-proxy
+  labels:
+    app.kubernetes.io/name: indexer-proxy
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: {{ .Values.indexerProxy.service.type }}
+  ports:
+    - port: {{ .Values.indexerProxy.service.port }}
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: indexer-proxy
+    app.kubernetes.io/instance: {{ .Release.Name }}

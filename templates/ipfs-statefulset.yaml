@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "my-subql-chart.fullname" . }}-ipfs
+  labels:
+    app.kubernetes.io/name: ipfs
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  serviceName: {{ include "my-subql-chart.fullname" . }}-ipfs
+  replicas: {{ .Values.ipfs.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ipfs
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ipfs
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: ipfs
+          image: "{{ .Values.ipfs.image.repository }}:{{ .Values.ipfs.image.tag }}"
+          ports:
+            - containerPort: 5001
+          volumeMounts:
+            - name: ipfs-storage
+              mountPath: /data/ipfs
+  volumeClaimTemplates:
+    - metadata:
+        name: ipfs-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.ipfs.persistence.size }}
