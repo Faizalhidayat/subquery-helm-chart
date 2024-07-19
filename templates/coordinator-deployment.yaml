@@ -1,29 +1,56 @@
+# coordinator-deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "my-subql-chart.fullname" . }}-coordinator
   labels:
-    app.kubernetes.io/name: coordinator
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "my-subql-chart.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.coordinator.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: coordinator
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "my-subql-chart.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: coordinator
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: coordinator
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "my-subql-chart.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: coordinator
     spec:
       containers:
         - name: coordinator
           image: "{{ .Values.coordinator.image.repository }}:{{ .Values.coordinator.image.tag }}"
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8000
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          command: ["/bin/sh"]
+          args: 
+            - "-c"
+            - |
+              coordinator_command 2>&1 | tee /var/log/coordinator.log
           env:
             - name: ENVIRONMENT
               value: {{ .Values.global.environment }}
+            - name: LOG_LEVEL
+              value: {{ .Values.coordinator.logLevel | quote }}
             - name: DISABLE_MANAGED_PROJECTS
-              value: "true"
+              value: {{ .Values.coordinator.disableManagedProjects | quote }}
+          resources:
+            {{- toYaml .Values.coordinator.resources | nindent 12 }}
+          volumeMounts:
+            - name: log
+              mountPath: /var/log
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+      volumes:
+        - name: log
+          emptyDir: {}

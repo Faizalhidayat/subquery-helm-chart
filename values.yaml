@@ -1,3 +1,5 @@
+# values.yaml
+
 global:
   environment: production
 
@@ -18,6 +20,15 @@ coordinator:
   service:
     type: ClusterIP
     port: 8000
+  logLevel: "info"  # Bisa diubah menjadi "debug", "warn", atau "error"
+  disableManagedProjects: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
 
 ipfs:
   replicaCount: 1
@@ -35,7 +46,6 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
     - host: subquery.example.com
