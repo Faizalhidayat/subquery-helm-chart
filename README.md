@@ -26,7 +26,14 @@ Modify `values.yaml` for configuration options. Key parameters:
 |-----------|-------------|---------|
 | `indexerProxy.replicaCount` | Number of indexer proxy replicas | `2` |
 | `coordinator.replicaCount` | Number of coordinator replicas | `1` |
+| `coordinator.disableManagedProjects` | Disable the feature to create managed SubQL projects | `true` |
+| `coordinator.showStdoutInAdminUI` | Show coordinator's stdout in admin UI | `false` |
 | `ipfs.persistence.size` | IPFS storage size | `10Gi` |
+
+### Important Notes
+
+- When `coordinator.disableManagedProjects` is set to `true`, the ability to create new managed SubQL projects through the admin UI will be disabled. This is recommended for Kubernetes deployments where creating containers through docker sock is not possible.
+- `coordinator.showStdoutInAdminUI` controls whether the coordinator's stdout is displayed in the admin UI. Set to `false` to hide it, which may be necessary in Kubernetes environments.
 
 ## Uninstalling the Chart
 

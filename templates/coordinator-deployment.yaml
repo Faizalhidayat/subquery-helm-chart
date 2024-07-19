@@ -30,7 +30,11 @@ spec:
           args: 
             - "-c"
             - |
-              coordinator_command 2>&1 | tee /var/log/coordinator.log
+              if [ "{{ .Values.coordinator.showStdoutInAdminUI }}" = "true" ]; then
+                coordinator_command 2>&1 | tee /var/log/coordinator.log
+              else
+                coordinator_command > /var/log/coordinator.log 2>&1
+              fi
           env:
             - name: ENVIRONMENT
               value: {{ .Values.global.environment }}
@@ -38,6 +42,8 @@ spec:
               value: {{ .Values.coordinator.logLevel | quote }}
             - name: DISABLE_MANAGED_PROJECTS
               value: {{ .Values.coordinator.disableManagedProjects | quote }}
+            - name: SHOW_STDOUT_IN_ADMIN_UI
+              value: {{ .Values.coordinator.showStdoutInAdminUI | quote }}
           resources:
             {{- toYaml .Values.coordinator.resources | nindent 12 }}
           volumeMounts:

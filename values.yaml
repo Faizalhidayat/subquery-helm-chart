@@ -20,8 +20,9 @@ coordinator:
   service:
     type: ClusterIP
     port: 8000
-  logLevel: "info"  # Bisa diubah menjadi "debug", "warn", atau "error"
-  disableManagedProjects: true
+  logLevel: "info"
+  disableManagedProjects: true  # Tambahkan ini
+  showStdoutInAdminUI: false    # Tambahkan ini
   resources:
     limits:
       cpu: 500m

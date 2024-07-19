@@ -1,0 +1,14 @@
+# admin-ui-configmap.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "my-subql-chart.fullname" . }}-admin-ui-config
+data:
+  config.json: |
+    {
+      "disableManagedProjects": {{ .Values.coordinator.disableManagedProjects }},
+      "showCoordinatorStdout": {{ .Values.coordinator.showStdoutInAdminUI }},
+      "environment": "{{ .Values.global.environment }}",
+      "coordinatorUrl": "http://{{ include "my-subql-chart.fullname" . }}-coordinator:{{ .Values.coordinator.service.port }}"
+    }
